@@ -1,0 +1,37 @@
+using Gtk 4.0;
+using Adw 1;
+
+template FragMainWindow : Adw.ApplicationWindow {
+	width-request: 400;
+	height-request: 425;
+
+	notify::count => on_count_changed();
+
+	Gtk.Box {
+		orientation: vertical;
+
+		Adw.HeaderBar {
+			styles ["flat"]
+
+			title-widget: Adw.WindowTitle {
+				title: 'Fragile';
+			};
+		}
+
+		Gtk.WindowHandle {
+			Adw.StatusPage statusPage {
+				title: bind FragMainWindow.test;
+				description: 'Button clicked 0 times';
+				icon-name: 'application-x-executable';
+				vexpand: true;
+
+				Gtk.Button {
+					label: 'Test';
+					styles ['suggested-action', 'pill']
+
+					clicked => on_button_clicked();
+				}
+			}
+		}
+	}
+}

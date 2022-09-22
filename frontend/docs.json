@@ -1,0 +1,11 @@
+{
+	"options": {
+		"inferGenerics": true,
+		"promisify": true,
+		"propertyCase": "camel",
+		"withDocs": true,
+		"versionedOutput": true,
+		"versionedImports": true,
+		"importPrefix": "@gi/"
+	}
+}

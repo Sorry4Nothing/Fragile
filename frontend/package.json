@@ -1,0 +1,37 @@
+{
+	"name": "fragile",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"lint": "npm run lint:code && npm run lint:codestyle",
+		"lint:code": "eslint .",
+		"lint:codestyle": "prettier --check .",
+		"fix": "npm run fix:codestyle",
+		"fix:codestyle": "prettier --write .",
+		"clean": "npm run clean:types && npm run clean:dist && npm run clean:ui",
+		"clean:types": "rimraf types docs-lock.json",
+		"clean:dist": "rimraf dist",
+		"clean:ui": "rimraf res/*.ui",
+		"build": "npm run build:types && npm run build:ts && npm run build:ui && npm run build:gresources",
+		"build:types": "gi-ts generate --all --format=dts",
+		"build:ts": "rollup -c && chmod a+x dist/fragile.js",
+		"build:ui": "blueprint-compiler batch-compile res res res/*.blp",
+		"build:gresources": "glib-compile-resources --sourcedir=res --target=dist/fragile.gresource res/fragile.gresource.xml",
+		"lock:types": "rimraf docs-lock.json && gi-ts config --lock",
+		"start": "npm run build:ts && npm run build:ui && npm run build:gresources && npm run gjs",
+		"gjs": "dist/fragile.js"
+	},
+	"devDependencies": {
+		"@gi.ts/cli": "^1.5.10",
+		"@rollup/plugin-typescript": "^8.5.0",
+		"@typescript-eslint/eslint-plugin": "^5.37.0",
+		"@typescript-eslint/parser": "^5.37.0",
+		"eslint": "^8.23.1",
+		"prettier": "^2.7.1",
+		"rimraf": "^3.0.2",
+		"rollup": "^2.79.0",
+		"rollup-plugin-terser": "^7.0.2",
+		"typescript": "^4.8.3"
+	}
+}
