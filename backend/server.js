@@ -39,20 +39,38 @@ app.get('/', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-	let username = req.body.username;
-	let password = req.body.password;
+    let username = req.body.username;
+    let password = req.body.password;
 
-	db.serialize(() => {
-		const validLoginStmt = db.prepare('SELECT * FROM Fraccounts WHERE name = ? AND password = ?', [username, password]);
-		validLoginStmt.get((err, row) => {
-			if (err || !row) {
+    db.serialize(() => {
+        const validLoginStmt = db.prepare('SELECT * FROM Fraccounts WHERE name = ? AND password = ?', [username, password]);
+        validLoginStmt.get((err, row) => {
+            if (err || !row) {
                 console.log(err);
                 res.status(401).send('Invalid username or password');
-			} else {
-				res.send(`Succuseful login, your password is: ${password}`);
-			}
-		});
-	});
+            } else {
+                res.send(`Succuseful login, your password is: ${password}`);
+            }
+        });
+    });
+});
+
+app.post('/register', (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+
+    db.serialize(() => {
+        const insertStmt = db.prepare("INSERT INTO Fraccounts('name', 'password') VALUES (?, ?)", [username, password]);
+        insertStmt.run((err) => {
+            if (err) {
+                console.log(err);
+                res.status(400).send('Username already exists');
+            } else {
+                res.send(`Succuseful registration, your password is: ${password}`);
+            }
+        });
+        insertStmt.finalize();
+    });
 });
 
 app.listen(port, () => {
