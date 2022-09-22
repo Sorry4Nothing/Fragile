@@ -1,5 +1,5 @@
-CREATE TABLE Fraccounts (
-    id integer NOT NULL PRIMARY KEY,
-    name CLOB NOT NULL,
+CREATE TABLE IF NOT EXISTS Fraccounts (
+    id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name CLOB NOT NULL UNIQUE,
     password CLOB NOT NULL
 );
