@@ -30,7 +30,10 @@ export class Request {
 			}
 		}
 
-		// TODO: request body
+		if (this.options.body) {
+			const bytes = new GLib.Bytes(Uint8Array.from(this.options.body.split('').map((c) => c.charCodeAt(0)) ?? 0));
+			msg.set_request_body_from_bytes((this.options.headers || {})['content-type'], bytes);
+		}
 
 		return msg;
 	}
