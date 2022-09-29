@@ -1,5 +1,4 @@
 import Adw from '@gi/adw1';
-import { test } from '@/other';
 import { registerClass } from '@/utils/gjs';
 import { FragMainWindow } from '@/main_window';
 
@@ -16,8 +15,6 @@ class FragApp extends Adw.Application {
 
 	vfunc_activate() {
 		const win = new FragMainWindow({ application: this });
-		win.test = test;
-
 		win.show();
 	}
 }

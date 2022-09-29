@@ -13,21 +13,17 @@ for (const lib of docsLock) {
 	paths[`@gi/${lib.slug}`] = `gi://${lib.name}?version=${lib.api_version}`;
 }
 
-/** @type {import('rollup').RollupOptions} */
-export default {
-	input: 'src/entrypoint.ts',
-	output: {
-		file: `${buildPath}/fragile.js`,
-		format: 'esm',
-		name: 'fragile',
-		paths,
-		banner: `#!/usr/bin/env -S gjs -m
-import Gio from 'gi://Gio?version=2.0';
-const file = Gio.File.new_for_uri(import.meta.url);
-const resfile = file.get_parent()?.resolve_relative_path('fragile.gresource');
-const resource = Gio.Resource.load(resfile?.get_path() ?? '');
-Gio.resources_register(resource);`,
+/** @type {import('rollup').RollupOptions[]} */
+export default [
+	{
+		input: 'src/entrypoint.ts',
+		output: {
+			dir: buildPath,
+			format: 'esm',
+			banner: '#!/usr/bin/env -S gjs -m',
+		paths
+		},
+		external: [...Object.keys(paths), 'console'],
+		plugins: [typescript({ tsconfig: './tsconfig.json' }), terser()],
 	},
-	external: [...Object.keys(paths), 'console'],
-	plugins: [typescript({ tsconfig: './tsconfig.json' }), terser()],
-};
+];

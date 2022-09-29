@@ -15,12 +15,12 @@
 		"clean:ui": "rimraf res/*.ui",
 		"build": "npm run build:types && npm run build:ts && npm run build:ui && npm run build:gresources",
 		"build:types": "gi-ts generate --all --format=dts",
-		"build:ts": "rollup -c && chmod a+x dist/fragile.js",
+		"build:ts": "rollup -c && chmod a+x dist/entrypoint.js",
 		"build:ui": "blueprint-compiler batch-compile res res res/*.blp",
 		"build:gresources": "glib-compile-resources --sourcedir=res --target=dist/fragile.gresource res/fragile.gresource.xml",
 		"lock:types": "rimraf docs-lock.json && gi-ts config --lock",
 		"start": "npm run build:ts && npm run build:ui && npm run build:gresources && npm run gjs",
-		"gjs": "dist/fragile.js"
+		"gjs": "dist/entrypoint.js"
 	},
 	"devDependencies": {
 		"@gi.ts/cli": "^1.5.10",

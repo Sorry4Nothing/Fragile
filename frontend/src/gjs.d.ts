@@ -46,3 +46,5 @@ declare function setTimeout(callback: (...args: any[]) => void, delay: number, .
 declare function clearTimeout(id: number): void;
 declare function setInterval(callback: (...args: any[]) => void, delay: number, ...args: any[]): number;
 declare function clearInterval(id: number): void;
+
+declare const ARGV: string[]

@@ -5,8 +5,6 @@ template FragMainWindow : Adw.ApplicationWindow {
 	width-request: 400;
 	height-request: 425;
 
-	notify::count => on_count_changed();
-
 	Gtk.Box {
 		orientation: vertical;
 
@@ -20,8 +18,7 @@ template FragMainWindow : Adw.ApplicationWindow {
 
 		Gtk.WindowHandle {
 			Adw.StatusPage statusPage {
-				title: bind FragMainWindow.test;
-				description: 'Button clicked 0 times';
+				title: 'Hello World';
 				icon-name: 'application-x-executable';
 				vexpand: true;
 
