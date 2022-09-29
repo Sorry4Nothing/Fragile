@@ -47,4 +47,30 @@ declare function clearTimeout(id: number): void;
 declare function setInterval(callback: (...args: any[]) => void, delay: number, ...args: any[]): number;
 declare function clearInterval(id: number): void;
 
+interface TextDecodeOptions {
+	stream?: boolean;
+}
+
+interface TextDecoderOptions {
+	fatal?: boolean;
+	ignoreBOM?: boolean;
+}
+
+interface TextDecoder {
+	decode(input?: Uint8Array, options?: TextDecodeOptions): string;
+}
+
+declare const TextDecoder: {
+	prototype: TextDecoder;
+	new (label?: string, options?: TextDecoderOptions): TextDecoder;
+};
+
 declare const ARGV: string[]
+
+interface ImportMeta {
+	url: string;
+}
+
+declare module 'system' {
+	export function exit(code: number): void;
+}

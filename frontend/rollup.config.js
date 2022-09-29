@@ -23,7 +23,7 @@ export default [
 			banner: '#!/usr/bin/env -S gjs -m',
 		paths
 		},
-		external: [...Object.keys(paths), 'console'],
+		external: [...Object.keys(paths), 'console', 'system'],
 		plugins: [typescript({ tsconfig: './tsconfig.json' }), terser()],
 	},
 ];
