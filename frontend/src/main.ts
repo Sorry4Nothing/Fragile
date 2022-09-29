@@ -1,6 +1,6 @@
 import Adw from '@gi/adw1';
 import { registerClass } from '@/utils/gjs';
-import { FragMainWindow } from '@/main_window';
+import { FragLoginWindow } from '@/login_window';
 
 @registerClass({
 	GTypeName: 'FragApp',
@@ -14,7 +14,7 @@ class FragApp extends Adw.Application {
 	}
 
 	vfunc_activate() {
-		const win = new FragMainWindow({ application: this });
+		const win = new FragLoginWindow({ application: this });
 		win.show();
 	}
 }

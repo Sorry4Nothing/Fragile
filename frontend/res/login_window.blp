@@ -1,0 +1,66 @@
+using Gtk 4.0;
+using Adw 1;
+
+template FragLoginWindow : Adw.ApplicationWindow {
+	width-request: 400;
+	height-request: 425;
+
+	Gtk.Box {
+		orientation: vertical;
+
+		Adw.HeaderBar {
+			title-widget: Adw.WindowTitle {
+				title: 'Login';
+			};
+		}
+
+		Gtk.Box {
+			orientation: vertical;
+			margin-top: 20;
+			margin-bottom: 20;
+			margin-start: 20;
+			margin-end: 20;
+			spacing: 10;
+
+			Gtk.Box {
+				orientation: vertical;
+				styles ['linked']
+
+				Gtk.Entry {
+					placeholder-text: 'Username';
+					text: bind FragLoginWindow.username bidirectional;
+				}
+
+				Gtk.Entry {
+					placeholder-text: 'Password';
+					text: bind FragLoginWindow.password bidirectional;
+					visibility: false;
+				}
+			}
+
+			Gtk.Label {
+				label: bind FragLoginWindow.error;
+				visible: bind FragLoginWindow.error-visible;
+				styles ['error']
+			}
+
+			Gtk.Button {
+				label: 'Login';
+				halign: center;
+				valign: center;
+				styles ['suggested-action', 'pill']
+
+				clicked => on_login_clicked();
+			}
+
+			Gtk.Button {
+				label: 'Register';
+				halign: center;
+				valign: center;
+				styles ['flat', 'pill']
+
+				clicked => on_register_clicked();
+			}
+		}
+	}
+}
