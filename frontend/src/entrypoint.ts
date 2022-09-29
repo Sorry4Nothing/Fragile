@@ -14,14 +14,15 @@ Gio.resources_register(resource);
 
 const loop = new GLib.MainLoop(null, false);
 
-import('@/main').then((m) => m.main)
-	.then(main => {
+import('@/main')
+	.then((m) => m.main)
+	.then((main) => {
 		GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
 			loop.quit();
 			const exit_code = main(ARGV);
 			exit(exit_code);
 			return GLib.SOURCE_REMOVE;
-		})
+		});
 	});
 
 loop.run();

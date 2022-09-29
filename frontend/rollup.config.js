@@ -21,7 +21,7 @@ export default [
 			dir: buildPath,
 			format: 'esm',
 			banner: '#!/usr/bin/env -S gjs -m',
-		paths
+			paths,
 		},
 		external: [...Object.keys(paths), 'console', 'system'],
 		plugins: [typescript({ tsconfig: './tsconfig.json' }), terser()],

@@ -14,7 +14,7 @@ class FragApp extends Adw.Application {
 	}
 
 	vfunc_activate() {
-const win = new FragMainWindow({ application: this });
+		const win = new FragMainWindow({ application: this });
 		win.show();
 	}
 }

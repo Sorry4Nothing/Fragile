@@ -65,7 +65,7 @@ declare const TextDecoder: {
 	new (label?: string, options?: TextDecoderOptions): TextDecoder;
 };
 
-declare const ARGV: string[]
+declare const ARGV: string[];
 
 interface ImportMeta {
 	url: string;
