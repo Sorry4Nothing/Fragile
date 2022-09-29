@@ -1,0 +1,3 @@
+{
+    "JWTSecret": "ADD YOU JWT SECRET (Generate with openssl)"
+}
