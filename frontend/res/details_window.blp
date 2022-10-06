@@ -1,0 +1,94 @@
+using Gtk 4.0;
+using Adw 1;
+
+template FragDetailsWindow : Adw.ApplicationWindow {
+	width-request: 1366;
+	height-request: 768;
+
+	Gtk.Box box {
+		orientation: vertical;
+
+		Adw.HeaderBar {
+			title-widget: Adw.WindowTitle {
+				title: 'Details';
+			};
+		}
+
+            Gtk.DropDown{
+                Gtk.StringList dropdown_projects{
+
+                }
+            }
+
+            Gtk.Box {
+                orientation: horizontal;
+                margin-top: 20;
+                margin-bottom: 20;
+                margin-start: 20;
+                margin-end: 20;
+                spacing: 10;
+
+            Gtk.Box{
+                orientation: vertical;
+                Gtk.Label {
+                        label: "Sprint Backlog";
+                    }
+
+                Gtk.ListBox list_backlog {
+                    width-request: 200;height-request: 500;
+                    halign: center;
+                    valign: center;
+                    styles ['flat', 'pill']
+                }
+            }
+
+            Gtk.Box{
+                orientation: vertical;
+                Gtk.Label {
+                        label: "Open Tasks";
+                    }
+                Gtk.ListBox list_open {
+                    width-request: 200;height-request: 500;
+                    halign: center;
+                    valign: center;
+                    styles ['flat', 'pill']
+                }
+            }
+
+            Gtk.Box{
+                orientation: vertical;
+                Gtk.Label {
+                        label: "Ready for review";
+                    }
+                Gtk.ListBox list_reviewready {
+                    width-request: 200;height-request: 300;
+                    halign: center;
+                    valign: center;
+                    styles ['flat', 'pill']
+                }
+            }
+
+            Gtk.Box{
+                orientation: vertical;
+                Gtk.Label {
+                        label: "Done";
+                    }
+                Gtk.ListBox list_done {
+                    width-request: 200;height-request: 400;
+                    halign: center;
+                    valign: center;
+                    styles ['flat', 'pill']
+                }
+            }
+
+            Gtk.Button {
+                label: 'Refresh';
+                halign: center;
+                valign: center;
+                styles ['flat', 'pill']
+
+                clicked => on_refresh_clicked();
+            }
+		}
+	}
+}
