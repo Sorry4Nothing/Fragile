@@ -23,6 +23,6 @@ import('@/main')
 			exit(exit_code);
 			return GLib.SOURCE_REMOVE;
 		});
-	});
+	}).catch( error => console.log(error));
 
 loop.run();
