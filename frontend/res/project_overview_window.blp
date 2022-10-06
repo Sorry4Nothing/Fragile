@@ -1,0 +1,56 @@
+using Gtk 4.0;
+using Adw 1;
+
+template ProjectOverviewWindow : Adw.ApplicationWindow {
+	width-request: 400;
+	height-request: 425;
+
+	Gtk.Box {
+		orientation: vertical;
+
+		Adw.HeaderBar {
+			title-widget: Adw.WindowTitle {
+				title: 'Login';
+			};
+
+            [end]
+            Gtk.Box {
+                orientation: horizontal;
+                
+                Gtk.Button {
+                    icon-name: 'view-refresh-symbolic';
+
+                    clicked => on_refresh_clicked();
+			    }
+
+                Gtk.Button {
+                    icon-name: 'document-import-symbolic';
+
+                    clicked => on_new_clicked();
+                }
+            }
+		}
+
+		Gtk.Box {
+			orientation: vertical;
+			margin-top: 20;
+			margin-bottom: 20;
+			margin-start: 20;
+			margin-end: 20;
+			spacing: 10;
+
+			Gtk.Label {
+				label: bind ProjectOverviewWindow.error;
+				visible: bind ProjectOverviewWindow.error-visible;
+				styles ['error']
+			}
+		}
+
+        Gtk.ListBox overviewList {
+            margin-top: 20;
+            margin-bottom: 20;
+            margin-start: 20;
+            margin-end: 20;
+        }
+	}
+}
