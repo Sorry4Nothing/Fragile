@@ -1,7 +1,7 @@
-import { FragileMission } from "./fragilemission";
+import { FragileMission } from './fragilemission';
 
 export interface FragileProject {
-    id: number;
-    projectName: string;
-    missions: FragileMission[];
+	id: number;
+	projectName: string;
+	missions: FragileMission[];
 }

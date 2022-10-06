@@ -69,15 +69,14 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 		this.projects = this.projects;
 
 		// remove all children of overvielist ListBox
-        while (true) {
-            const child = this._overviewList.get_row_at_index(0);
-            if (!child) {
-                break;
-            }
-            this._overviewList.remove(child);
-        }
+		while (true) {
+			const child = this._overviewList.get_row_at_index(0);
+			if (!child) {
+				break;
+			}
+			this._overviewList.remove(child);
+		}
 
-        
 		for (const project of this.projects!) {
 			this._overviewList.append(new Gtk.Label({ label: project.projectName }));
 		}
