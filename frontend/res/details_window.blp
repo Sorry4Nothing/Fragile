@@ -14,12 +14,6 @@ template FragDetailsWindow : Adw.ApplicationWindow {
 			};
 		}
 
-            Gtk.DropDown{
-                Gtk.StringList dropdown_projects{
-
-                }
-            }
-
             Gtk.Box {
                 orientation: horizontal;
                 margin-top: 20;
@@ -79,15 +73,6 @@ template FragDetailsWindow : Adw.ApplicationWindow {
                     valign: center;
                     styles ['flat', 'pill']
                 }
-            }
-
-            Gtk.Button {
-                label: 'Refresh';
-                halign: center;
-                valign: center;
-                styles ['flat', 'pill']
-
-                clicked => on_refresh_clicked();
             }
 		}
 	}

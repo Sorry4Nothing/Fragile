@@ -16,7 +16,6 @@ Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_f
         GObject.ParamFlags.READWRITE),
 	},
     Children: [
-        'dropdown_projects',
         'list_backlog',
         'list_open',
         'list_reviewready',
@@ -24,7 +23,6 @@ Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_f
     ],
 })
 export class FragDetailsWindow extends Adw.ApplicationWindow {
-    public dropdown_projects: Gtk.StringList;
     public list_backlog: Gtk.ListBox;
     public list_open: Gtk.ListBox;
     public list_reviewready: Gtk.ListBox;
@@ -35,8 +33,6 @@ export class FragDetailsWindow extends Adw.ApplicationWindow {
 
     constructor(params = {}) {
         super(params);
-
-        this.dropdown_projects.append("test1");
 
         this.tasks_mock.forEach(task => {
             const gtkText = new Gtk.Label();
@@ -67,9 +63,4 @@ export class FragDetailsWindow extends Adw.ApplicationWindow {
         this.list_reviewready.visible = true;
         this.list_done.visible = true;
     }
-
-    // fetch data
-	on_refresh_clicked() {
-        console.log("to be implemented");
-	}
 }
