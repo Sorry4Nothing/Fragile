@@ -2,5 +2,6 @@
 <gresources>
 	<gresource prefix="/com/github/sorry4nothing/Fragile">
 		<file>login_window.ui</file>
+		<file>import_window.ui</file>
 	</gresource>
 </gresources>
