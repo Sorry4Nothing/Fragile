@@ -1,0 +1,63 @@
+using Gtk 4.0;
+using Adw 1;
+
+template FragImportWindow : Adw.ApplicationWindow {
+	width-request: 400;
+	height-request: 225;
+
+	Gtk.Box {
+		orientation: vertical;
+
+		Adw.HeaderBar {
+			title-widget: Adw.WindowTitle {
+				title: 'Import fragile board';
+			};
+		}
+
+		Gtk.Box {
+			orientation: vertical;
+			margin-top: 20;
+			margin-bottom: 20;
+			margin-start: 20;
+			margin-end: 20;
+			spacing: 10;
+
+			Gtk.Box {
+				orientation: vertical;
+				styles ['linked']
+				
+				Gtk.Entry {
+					placeholder-text: 'Name';
+					text: bind FragImportWindow.fragile-name bidirectional;
+				}
+
+				Gtk.Entry {
+					placeholder-text: 'Link';
+					text: bind FragImportWindow.link bidirectional;
+				}
+
+				Gtk.DropDown {
+					selected: bind FragImportWindow.platform bidirectional;
+					model: Gtk.StringList {
+						strings ['Githöb', 'Jira', 'Fragile']
+					};
+				}
+			}
+
+			Gtk.Label {
+				label: bind FragImportWindow.error;
+				visible: bind FragImportWindow.error-visible;
+				styles ['error']
+			}
+
+			Gtk.Button {
+				label: 'Import';
+				halign: center;
+				valign: center;
+				styles ['suggested-action', 'pill']
+
+				clicked => on_import_clicked();
+			}
+		}
+	}
+}
