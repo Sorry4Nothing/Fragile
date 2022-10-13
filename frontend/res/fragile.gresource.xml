@@ -4,5 +4,7 @@
 		<file>login_window.ui</file>
 		<file>project_overview_window.ui</file>
 		<file>import_window.ui</file>
+		<file>details_window.ui</file>
+		<file>loggedin_window.ui</file>
 	</gresource>
 </gresources>

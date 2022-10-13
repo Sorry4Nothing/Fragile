@@ -1,0 +1,209 @@
+using Gtk 4.0;
+using Adw 1;
+
+template FragLoggedinWindow : Adw.ApplicationWindow {
+	width-request: 400;
+	height-request: 425;
+
+Gtk.Box{
+    orientation: horizontal;
+
+        Gtk.StackSidebar stack_sidebar{
+        }
+
+        Gtk.Stack stack{
+            Gtk.StackPage{
+                name: "Project Overview";
+                title: "Project Overview";
+                child: Gtk.Box{
+                            Gtk.Box {
+                                orientation: vertical;
+
+                                Adw.HeaderBar {
+                                    title-widget: Adw.WindowTitle {
+                                        title: 'Project Overview';
+                                    };
+
+                                    [end]
+                                    Gtk.Box {
+                                        orientation: horizontal;
+                                        
+                                        Gtk.Button {
+                                            icon-name: 'view-refresh-symbolic';
+
+                                            clicked => on_refresh_clicked();
+                                        }
+
+                                        Gtk.Button {
+                                            icon-name: 'document-import-symbolic';
+
+                                            clicked => on_new_clicked();
+                                        }
+                                    }
+                                }
+
+                                Gtk.Box {
+                                    orientation: vertical;
+                                    margin-top: 20;
+                                    margin-bottom: 20;
+                                    margin-start: 20;
+                                    margin-end: 20;
+                                    spacing: 10;
+
+                                    Gtk.Label {
+                                        label: bind FragLoggedinWindow.error;
+                                        visible: bind FragLoggedinWindow.error-visible;
+                                        styles ['error']
+                                    }
+                                }
+
+                                Gtk.ListBox overviewList {
+                                    margin-top: 20;
+                                    margin-bottom: 20;
+                                    margin-start: 20;
+                                    margin-end: 20;
+                                }
+                            }
+                        };
+                    }
+
+
+            Gtk.StackPage{
+                name: "Import Board";
+                title: "Import Board";
+                child: Gtk.Box {
+		            orientation: vertical;
+
+                        Adw.HeaderBar {
+                            title-widget: Adw.WindowTitle {
+                                title: 'Import fragile board';
+                            };
+                        }
+
+                        Gtk.Box {
+                            orientation: vertical;
+                            margin-top: 20;
+                            margin-bottom: 20;
+                            margin-start: 20;
+                            margin-end: 20;
+                            spacing: 10;
+
+                            Gtk.Box {
+                                orientation: vertical;
+                                styles ['linked']
+                                
+                                Gtk.Entry {
+                                    placeholder-text: 'Name';
+                                    text: bind FragLoggedinWindow.fragile-name bidirectional;
+                                }
+
+                                Gtk.Entry {
+                                    placeholder-text: 'Link';
+                                    text: bind FragLoggedinWindow.link bidirectional;
+                                }
+
+                                Gtk.DropDown {
+                                    selected: bind FragLoggedinWindow.platform bidirectional;
+                                    model: Gtk.StringList {
+                                        strings ['Githöb', 'Jira', 'Fragile']
+                                    };
+                                }
+                            }
+
+                            Gtk.Label {
+                                label: bind FragLoggedinWindow.importError;
+                                visible: bind FragLoggedinWindow.importErrorVisible;
+                                styles ['error']
+                            }
+
+                            Gtk.Button {
+                                label: 'Import';
+                                halign: center;
+                                valign: center;
+                                styles ['suggested-action', 'pill']
+
+                                clicked => on_import_clicked();
+                            }
+                        }
+                    };
+                
+            }
+            Gtk.StackPage{
+                name: "Details";
+                title: "Details";
+                child:  Gtk.Box details_page_box {
+                orientation: vertical;
+
+                Adw.HeaderBar {
+                    title-widget: Adw.WindowTitle {
+                        title: 'Details';
+                    };
+                }
+
+                    Gtk.Box {
+                        orientation: horizontal;
+                        margin-top: 20;
+                        margin-bottom: 20;
+                        margin-start: 20;
+                        margin-end: 20;
+                        spacing: 10;
+
+                    Gtk.Box{
+                        orientation: vertical;
+                        Gtk.Label {
+                                label: "Sprint Backlog";
+                            }
+
+                        Gtk.ListBox list_backlog {
+                            width-request: 200;height-request: 500;
+                            halign: center;
+                            valign: center;
+                            styles ['flat', 'pill']
+                        }
+                    }
+
+                    Gtk.Box{
+                        orientation: vertical;
+                        Gtk.Label {
+                                label: "Open Tasks";
+                            }
+                        Gtk.ListBox list_open {
+                            width-request: 200;height-request: 500;
+                            halign: center;
+                            valign: center;
+                            styles ['flat', 'pill']
+                        }
+                    }
+
+                    Gtk.Box{
+                        orientation: vertical;
+                        Gtk.Label {
+                                label: "Ready for review";
+                            }
+                        Gtk.ListBox list_reviewready {
+                            width-request: 200;height-request: 500;
+                            halign: center;
+                            valign: center;
+                            styles ['flat', 'pill']
+                        }
+                    }
+
+                    Gtk.Box{
+                        orientation: vertical;
+                        Gtk.Label {
+                                label: "Done";
+                            }
+                        Gtk.ListBox list_done {
+                            width-request: 200;height-request: 500;
+                            halign: center;
+                            valign: center;
+                            styles ['flat', 'pill']
+                        }
+                    }
+                       
+                }
+                };
+            }
+    }
+}
+}
