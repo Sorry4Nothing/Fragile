@@ -1,10 +1,11 @@
-import express from 'express';
+import express, { response } from 'express';
 const app = express();
 const port = 3000;
 import bodyParser from 'body-parser';
 import sqlite3 from 'sqlite3';
 import fs from 'fs/promises';
-import { generateToken } from './tokenGenerator.js';
+import { generateToken, verifyToken } from './tokenOperations.js';
+import { getProject } from './githöbOperations.js';
 
 app.use(bodyParser.json());
 
@@ -40,51 +41,99 @@ app.get('/', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
+	let username = req.body.username;
+	let password = req.body.password;
 
-    db.serialize(() => {
-        const validLoginStmt = db.prepare('SELECT * FROM Fraccounts WHERE name = ? AND password = ?', [username, password]);
-        validLoginStmt.get(async (err, row) => {
-            if (err || !row) {
-                console.log(err);
-                res.status(401).send('Invalid username or password');
-            } else {
-                const user = {
-                    id: row.id,
-                    username: row.name,
-                    password: row.password
-                };
-                const token = await generateToken(user);
-                res.send(token);
-            }
-        });
-    });
+	db.serialize(() => {
+		const validLoginStmt = db.prepare('SELECT * FROM Fraccounts WHERE name = ? AND password = ?', [username, password]);
+		validLoginStmt.get(async (err, row) => {
+			if (err || !row) {
+				console.log(err);
+				res.status(401).send('Invalid username or password');
+			} else {
+				const user = {
+					id: row.id,
+					username: row.name,
+					password: row.password,
+				};
+				const token = await generateToken(user);
+				res.send(token);
+			}
+		});
+	});
 });
 
 app.post('/register', (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
+	let username = req.body.username;
+	let password = req.body.password;
 
-    db.serialize(() => {
-        const insertStmt = db.prepare("INSERT INTO Fraccounts('name', 'password') VALUES (?, ?)", [username, password]);
-        insertStmt.run(async (err) => {
-            if (err) {
-                console.log(err);
-                res.status(400).send('Username already exists');
-            } else {
-                const user = {
-                    username: username,
-                    password: password
-                };
-                const token = await generateToken(user);
-                res.send(token);
-            }
-        });
-        insertStmt.finalize();
-    });
+	db.serialize(() => {
+		const insertStmt = db.prepare("INSERT INTO Fraccounts('name', 'password') VALUES (?, ?)", [username, password]);
+		insertStmt.run(async (err) => {
+			if (err) {
+				console.log(err);
+				res.status(400).send('Username already exists');
+			} else {
+				const user = {
+					username: username,
+					password: password,
+				};
+				const token = await generateToken(user);
+				res.send(token);
+			}
+		});
+		insertStmt.finalize();
+	});
+});
+
+app.get('/isloggedin', async (req, res) => {
+	if (!isLoggedIn(req, res)) {
+		return;
+	}
+
+	res.sendStatus(204);
+});
+
+app.get('/import', async (req, res) => {
+	if (!isLoggedIn(req, res)) {
+		return;
+	}
+
+	const platform = req.query.platform;
+	const link = req.query.link;
+
+	if (!link || !platform) {
+		res.status(400).send('No link or platform defined');
+	}
+
+	switch (platform) {
+		case 'githöb':
+			const project = await getProject(link);
+			res.send(project);
+			break;
+		default:
+			// Currently only github is supported
+			res.status(400).send('Platform not supported');
+	}
 });
 
 app.listen(port, () => {
 	console.log(`Example app listening on port ${port}`);
 });
+
+async function isLoggedIn(req, res) {
+	// Authorization: Bearer {token}
+	const token = req.headers.authorization.split(' ')[1];
+
+	if (!token) {
+		res.status(400).send('No token provided');
+	}
+
+	const isTokenValid = await verifyToken(token);
+
+	if (!isTokenValid) {
+		res.status(401).send('Invalid token');
+	}
+
+	return isTokenValid;
+}
