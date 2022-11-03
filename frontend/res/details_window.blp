@@ -2,78 +2,103 @@ using Gtk 4.0;
 using Adw 1;
 
 template FragDetailsWindow : Adw.ApplicationWindow {
-	width-request: 1366;
-	height-request: 768;
+	width-request: 1000;
+	height-request: 600;
 
-	Gtk.Box box {
-		orientation: vertical;
+Gtk.Box{
+    orientation: horizontal;
 
-		Adw.HeaderBar {
-			title-widget: Adw.WindowTitle {
-				title: 'Details';
-			};
-		}
+    Gtk.Box details_page_box {
+            orientation: vertical;
 
-            Gtk.Box {
+            Adw.HeaderBar {
+                title-widget: Adw.WindowTitle {
+                    title: 'Details';
+                };
+            }
+
+            Gtk.Box{
                 orientation: horizontal;
-                margin-top: 20;
-                margin-bottom: 20;
-                margin-start: 20;
-                margin-end: 20;
-                spacing: 10;
+            
+                Gtk.ListBox sidebar {
+                    width-request: 100;
+                    height-request: 300;
+                    halign: center;
+                    valign: start;
+                    margin-top: 20;
+                    styles ['flat', 'pill']
 
-            Gtk.Box{
-                orientation: vertical;
-                Gtk.Label {
-                        label: "Sprint Backlog";
+                    Gtk.Button{
+                        label: "Import";
+                        clicked => on_import_clicked();
+                    }
+                    Gtk.Label{
+				    }
+                }
+
+                    Gtk.Box {
+                        orientation: horizontal;
+                        margin-top: 20;
+                        margin-bottom: 20;
+                        margin-start: 20;
+                        margin-end: 100;
+                        spacing: 10;
+
+                    Gtk.Box{
+                        orientation: vertical;
+                        Gtk.Label {
+                                label: "Sprint Backlog";
+                            }
+
+                        Gtk.ListBox list_backlog {
+                            width-request: 200;height-request: 300;
+                            halign: center;
+                            valign: center;
+                            styles ['flat', 'pill']
+                        }
                     }
 
-                Gtk.ListBox list_backlog {
-                    width-request: 200;height-request: 500;
-                    halign: center;
-                    valign: center;
-                    styles ['flat', 'pill']
-                }
-            }
-
-            Gtk.Box{
-                orientation: vertical;
-                Gtk.Label {
-                        label: "Open Tasks";
+                    Gtk.Box{
+                        orientation: vertical;
+                        Gtk.Label {
+                                label: "Open Tasks";
+                            }
+                        Gtk.ListBox list_open {
+                            width-request: 200;height-request: 300;
+                            halign: center;
+                            valign: center;
+                            styles ['flat', 'pill']
+                        }
                     }
-                Gtk.ListBox list_open {
-                    width-request: 200;height-request: 500;
-                    halign: center;
-                    valign: center;
-                    styles ['flat', 'pill']
-                }
-            }
 
-            Gtk.Box{
-                orientation: vertical;
-                Gtk.Label {
-                        label: "Ready for review";
+                    Gtk.Box{
+                        orientation: vertical;
+                        Gtk.Label {
+                                label: "Ready for review";
+                            }
+                        Gtk.ListBox list_reviewready {
+                            width-request: 200;height-request: 300;
+                            halign: center;
+                            valign: center;
+                            styles ['flat', 'pill']
+                        }
                     }
-                Gtk.ListBox list_reviewready {
-                    width-request: 200;height-request: 300;
-                    halign: center;
-                    valign: center;
-                    styles ['flat', 'pill']
-                }
-            }
 
-            Gtk.Box{
-                orientation: vertical;
-                Gtk.Label {
-                        label: "Done";
+                    Gtk.Box{
+                        orientation: vertical;
+                        Gtk.Label {
+                                label: "Done";
+                            }
+                        Gtk.ListBox list_done {
+                            width-request: 200;height-request: 300;
+                            halign: center;
+                            valign: center;
+                            styles ['flat', 'pill']
+                        }
                     }
-                Gtk.ListBox list_done {
-                    width-request: 200;height-request: 400;
-                    halign: center;
-                    valign: center;
-                    styles ['flat', 'pill']
+                        
                 }
             }
-		}
-	}
+        }
+    }
 }

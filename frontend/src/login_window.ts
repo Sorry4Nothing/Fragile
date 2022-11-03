@@ -4,6 +4,7 @@ import { fetch } from '@/utils/fetch';
 import GObject from '@gi/gobject2';
 import Gio from '@gi/gio2';
 import GLib from '@gi/glib2';
+import { FragImportWindow } from './import_window';
 
 Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_finish');
 
@@ -78,6 +79,10 @@ export class FragLoginWindow extends Adw.ApplicationWindow {
 
 				const jwt = res.text();
 				this._saveJwt(jwt);
+
+				const win = new FragImportWindow({ application: this.application });
+				this.close();
+				win.show();
 			})
 			.catch((err) => {
 				console.error(err);

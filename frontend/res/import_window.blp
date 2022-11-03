@@ -2,8 +2,8 @@ using Gtk 4.0;
 using Adw 1;
 
 template FragImportWindow : Adw.ApplicationWindow {
-	width-request: 400;
-	height-request: 225;
+	width-request: 1000;
+	height-request: 600;
 
 	Gtk.Box {
 		orientation: vertical;
@@ -14,49 +14,68 @@ template FragImportWindow : Adw.ApplicationWindow {
 			};
 		}
 
-		Gtk.Box {
-			orientation: vertical;
-			margin-top: 20;
-			margin-bottom: 20;
-			margin-start: 20;
-			margin-end: 20;
-			spacing: 10;
+		Gtk.Box{
+			orientation: horizontal;
+		
+			Gtk.ListBox sidebar {
+				width-request: 100;
+				height-request: 300;
+				halign: center;
+				valign: start;
+				margin-top: 20;
+				styles ['flat', 'pill']
+
+			 	Gtk.Button{
+					label: "Import";
+				}
+				Gtk.Label{
+				}
+			}
 
 			Gtk.Box {
 				orientation: vertical;
-				styles ['linked']
-				
-				Gtk.Entry {
-					placeholder-text: 'Name';
-					text: bind FragImportWindow.fragile-name bidirectional;
+				margin-top: 20;
+				margin-bottom: 20;
+				margin-start: 100;
+				margin-end: 20;
+				spacing: 10;
+
+				Gtk.Box {
+					orientation: vertical;
+					styles ['linked']
+					
+					Gtk.Entry {
+						placeholder-text: 'Name';
+						text: bind FragImportWindow.fragile-name bidirectional;
+					}
+
+					Gtk.Entry {
+						placeholder-text: 'Link';
+						text: bind FragImportWindow.link bidirectional;
+					}
+
+					Gtk.DropDown {
+						selected: bind FragImportWindow.platform bidirectional;
+						model: Gtk.StringList {
+							strings ['Githöb', 'Jira', 'Fragile']
+						};
+					}
 				}
 
-				Gtk.Entry {
-					placeholder-text: 'Link';
-					text: bind FragImportWindow.link bidirectional;
+				Gtk.Label {
+					label: bind FragImportWindow.error;
+					visible: bind FragImportWindow.error-visible;
+					styles ['error']
 				}
 
-				Gtk.DropDown {
-					selected: bind FragImportWindow.platform bidirectional;
-					model: Gtk.StringList {
-						strings ['Githöb', 'Jira', 'Fragile']
-					};
+				Gtk.Button {
+					label: 'Import';
+					halign: center;
+					valign: center;
+					styles ['suggested-action', 'pill']
+
+					clicked => on_import_clicked();
 				}
-			}
-
-			Gtk.Label {
-				label: bind FragImportWindow.error;
-				visible: bind FragImportWindow.error-visible;
-				styles ['error']
-			}
-
-			Gtk.Button {
-				label: 'Import';
-				halign: center;
-				valign: center;
-				styles ['suggested-action', 'pill']
-
-				clicked => on_import_clicked();
 			}
 		}
 	}
