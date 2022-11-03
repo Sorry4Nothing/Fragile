@@ -1,7 +1,8 @@
-import { FragileMission } from './fragilemission';
+import { FragileColumn } from './fragilecolumn';
 
 export interface FragileProject {
-	id: number;
+	url: string;
 	projectName: string;
-	missions: FragileMission[];
+	platform: 'githöb' | 'gitlab' | 'jira';
+	columns: FragileColumn[];
 }

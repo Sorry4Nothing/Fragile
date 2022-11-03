@@ -6,6 +6,7 @@ import GObject from '@gi/gobject2';
 import Gio from '@gi/gio2';
 import GLib from '@gi/glib2';
 import { FragileProject } from './models/fragileproject';
+import { FragileColumn } from './models/fragilecolumn';
 import { Box } from '../types/graphene1';
 
 Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_finish');
@@ -20,26 +21,38 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 	public errorVisible: boolean;
 	public projects: FragileProject[] = [
 		{
-			id: 1,
+			url: 'https://example.com',
 			projectName: 'Project 1',
-			missions: [
+			platform: 'jira',
+			columns: [
 				{
-					id: 1,
-					missionName: 'Epic epic',
-					missionDescription: 'Description 1',
-					missionType: 'epic',
+					name: 'backlog',
+					missions: [
+						{
+							id: 1,
+							missionName: 'Epic epic',
+							missionDescription: 'Description 1',
+							missionType: 'epic',
+						},
+					],
 				},
 			],
 		},
 		{
-			id: 2,
+			url: 'https://example.com',
 			projectName: 'Project 2',
-			missions: [
+			platform: 'gitlab',
+			columns: [
 				{
-					id: 2,
-					missionName: 'Story story',
-					missionDescription: 'Description 2',
-					missionType: 'story',
+					name: 'stories backlog',
+					missions: [
+						{
+							id: 2,
+							missionName: 'Story story',
+							missionDescription: 'Description 2',
+							missionType: 'story',
+						},
+					],
 				},
 			],
 		},
