@@ -4,6 +4,7 @@ using Adw 1;
 template FragLoginWindow : Adw.ApplicationWindow {
 	width-request: 400;
 	height-request: 425;
+	default-widget: login-button;
 
 	Gtk.Box {
 		orientation: vertical;
@@ -14,52 +15,57 @@ template FragLoginWindow : Adw.ApplicationWindow {
 			};
 		}
 
-		Gtk.Box {
-			orientation: vertical;
-			margin-top: 20;
-			margin-bottom: 20;
-			margin-start: 20;
-			margin-end: 20;
-			spacing: 10;
+		Adw.Clamp {
+			vexpand: true;
 
 			Gtk.Box {
 				orientation: vertical;
-				styles ['linked']
+				margin-top: 20;
+				margin-bottom: 20;
+				margin-start: 20;
+				margin-end: 20;
+				spacing: 20;
+				valign: center;
 
-				Gtk.Entry {
-					placeholder-text: 'Username';
-					text: bind FragLoginWindow.username bidirectional;
+				Gtk.ListBox {
+					styles ['boxed-list']
+
+					Adw.EntryRow {
+						title: 'Username';
+						text: bind FragLoginWindow.username bidirectional;
+						activates-default: true;
+					}
+
+					Adw.PasswordEntryRow {
+						title: 'Password';
+						text: bind FragLoginWindow.password bidirectional;
+						activates-default: true;
+					}
 				}
 
-				Gtk.Entry {
-					placeholder-text: 'Password';
-					text: bind FragLoginWindow.password bidirectional;
-					visibility: false;
+				Gtk.Label {
+					label: bind FragLoginWindow.error;
+					visible: bind FragLoginWindow.error-visible;
+					styles ['error']
 				}
-			}
 
-			Gtk.Label {
-				label: bind FragLoginWindow.error;
-				visible: bind FragLoginWindow.error-visible;
-				styles ['error']
-			}
+				Gtk.Button login-button {
+					label: 'Login';
+					halign: center;
+					valign: center;
+					styles ['suggested-action', 'pill']
 
-			Gtk.Button {
-				label: 'Login';
-				halign: center;
-				valign: center;
-				styles ['suggested-action', 'pill']
+					clicked => on_login_clicked();
+				}
 
-				clicked => on_login_clicked();
-			}
+				Gtk.Button {
+					label: 'Register';
+					halign: center;
+					valign: center;
+					styles ['flat', 'pill']
 
-			Gtk.Button {
-				label: 'Register';
-				halign: center;
-				valign: center;
-				styles ['flat', 'pill']
-
-				clicked => on_register_clicked();
+					clicked => on_register_clicked();
+				}
 			}
 		}
 	}
