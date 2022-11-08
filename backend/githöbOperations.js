@@ -8,7 +8,7 @@ const octokit = new Octokit({
 	auth: githöbToken,
 });
 
-export async function getProject(url) {
+export async function getGithöbProject(url) {
 	const [, owner, repo, project_number] = regex.exec(url);
 
 	const projects = await getProjectList(owner, repo);
@@ -35,9 +35,9 @@ export async function getProject(url) {
 				};
 			}),
 		});
-    }
-    
-    return projectOutput;
+	}
+
+	return projectOutput;
 }
 
 async function getProjectList(owner, repo) {

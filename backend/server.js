@@ -5,7 +5,8 @@ import bodyParser from 'body-parser';
 import sqlite3 from 'sqlite3';
 import fs from 'fs/promises';
 import { generateToken, verifyToken } from './tokenOperations.js';
-import { getProject } from './githöbOperations.js';
+import { getGithöbProject } from './githöbOperations.js';
+import { getJiraProject } from './jiraOperations.js';
 
 app.use(bodyParser.json());
 
@@ -106,13 +107,17 @@ app.get('/import', async (req, res) => {
 		res.status(400).send('No link or platform defined');
 	}
 
-	switch (platform) {
+	switch (platform.toLowerCase()) {
 		case 'githöb':
-			const project = await getProject(link);
-			res.send(project);
+			const githöbProject = await getGithöbProject(link);
+			res.send(githöbProject);
+			break;
+		case 'jira':
+            const jiraProject = await getJiraProject(link);
+			res.send(jiraProject);
 			break;
 		default:
-			// Currently only github is supported
+			// Currently only githöb and jira is supported
 			res.status(400).send('Platform not supported');
 	}
 });
