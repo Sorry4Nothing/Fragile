@@ -68,8 +68,6 @@ app.post('/register', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
 
-	console.log(password);
-
 	db.serialize(() => {
 		const insertStmt = db.prepare("INSERT INTO Fraccounts('name', 'password') VALUES (?, ?)", [username, password]);
 		insertStmt.run(async (err) => {
