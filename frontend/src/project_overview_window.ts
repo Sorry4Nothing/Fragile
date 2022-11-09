@@ -27,10 +27,7 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 
 	constructor(props: Partial<Adw.ApplicationWindow.ConstructorProperties> = {}) {
 		super(props);
-		this.setProjectsFromJson();
-		setTimeout(() => {
-			this.refresh();
-		}, 1000);
+		this.on_refresh_clicked();
 	}
 
 	on_new_clicked() {
@@ -69,6 +66,11 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 		if (this.resultProjects.length > 0) {
 			for (const project of this.resultProjects) {
 				this._overviewList.append(new Gtk.Label({ label: project.projectName }));
+				const removeButton = new Gtk.Button({ label: 'remove' });
+				removeButton.connect('clicked', () => {
+					this._removeProject(project);
+				});
+				this._overviewList.append(removeButton);
 			}
 		} else {
 			this._overviewList.append(new Gtk.Label({ label: 'No projects found' }));
@@ -102,4 +104,46 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 	}
 
 	//TODO: add onclick for each project label that leads to details window
+	private _removeProject(project: FragileProject): void {
+		console.log(`removing ${project.projectName}`);
+		const userDir = GLib.get_user_data_dir();
+		const projectFile = Gio.File.new_for_path(userDir + '/fragile/projects.json');
+
+		// check if file exists
+		if (projectFile.query_exists(null)) {
+			// read file
+			projectFile.load_contents_async(null, (file, res) => {
+				const [success, contents] = file!.load_contents_finish(res);
+				if (success) {
+					// parse json using textdecoder
+					const decoder = new TextDecoder();
+					const projects: FragileProject[] = JSON.parse(decoder.decode(contents));
+					const index = projects.findIndex((p) => p.projectName === project.projectName);
+					projects.splice(index, 1);
+					projectFile.replace_contents_async(
+						new GLib.Bytes(JSON.stringify(projects)),
+						null,
+						false,
+						Gio.FileCreateFlags.NONE,
+						null,
+						(file, res) => {
+							const [success] = file!.replace_contents_finish(res);
+							if (success) {
+								console.log('successfully removed project');
+								setTimeout(() => {
+									this.on_refresh_clicked();
+								}, 1000);
+							} else {
+								console.error('could not remove project');
+							}
+						}
+					);
+				} else {
+					console.error('could not read projects.json');
+				}
+			});
+		} else {
+			console.error('projects.json does not exist');
+		}
+	}
 }
