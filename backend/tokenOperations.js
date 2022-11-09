@@ -1,8 +1,9 @@
 import jsonwebtoken from 'jsonwebtoken';
 import fs from 'fs/promises';
 
-export async function generateToken(user) {
 const secret = JSON.parse(await fs.readFile('./resources/config.json')).JWTSecret;
+
+export async function generateToken(user) {
   const token = jsonwebtoken.sign(
     {
       id: user.id,
@@ -15,3 +16,14 @@ const secret = JSON.parse(await fs.readFile('./resources/config.json')).JWTSecre
   );
   return token;
 }
+
+export async function verifyToken(token) {
+  try {
+    jsonwebtoken.verify(token, secret);
+    return true;
+  } catch (e) {
+    console.error("invalid secret", e);
+    return false;
+  }
+}
+

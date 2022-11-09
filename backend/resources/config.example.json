@@ -1,3 +1,6 @@
 {
-    "JWTSecret": "ADD YOU JWT SECRET (Generate with openssl)"
+    "JWTSecret": "ADD YOU JWT SECRET (Generate with openssl)",
+    "GithöbSecret": "Add your githöb JWT TOKEN",
+    "JiraBasicAuthEmail": "Jira Email",
+    "JiraBasicAuthAPIToken": "Jira API Token"
 }
