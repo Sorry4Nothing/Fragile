@@ -1,29 +1,26 @@
-import Adw from '@gi/adw1';
-import Gtk, { Widget } from '@gi/gtk4';
-import { registerClass } from '@/utils/gjs';
 import { fetch } from '@/utils/fetch';
-import GObject from '@gi/gobject2';
+import { registerClass } from '@/utils/gjs';
+import Adw from '@gi/adw1';
 import Gio from '@gi/gio2';
 import GLib from '@gi/glib2';
-import { FragileProject } from './models/fragileproject';
-import { FragileColumn } from './models/fragilecolumn';
-import { Box } from '../types/graphene1';
+import Gtk from '@gi/gtk4';
 import { FragDetailsWindow } from './details_window';
 import { FragImportWindow } from './import_window';
+import { FragileProject } from './models/fragileproject';
 
 Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_finish');
 
 @registerClass({
 	GTypeName: 'ProjectOverviewWindow',
 	Template: 'resource:///com/github/sorry4nothing/Fragile/project_overview_window.ui',
-	InternalChildren: ['overviewList', "searchEntry"],
+	InternalChildren: ['overviewList', 'searchEntry'],
 })
 export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 	public error: string;
 	public errorVisible: boolean;
 
 	private _overviewList: Gtk.ListBox;
-	private _searchEntry : Gtk.SearchEntry;
+	private _searchEntry: Gtk.SearchEntry;
 	private resultProjects: FragileProject[] = [];
 
 	constructor(props: Partial<Adw.ApplicationWindow.ConstructorProperties> = {}) {
@@ -53,8 +50,7 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 		win.show();
 	}
 
-	refresh() {
-		//should make a fetch call on real implementation
+	async refresh() {
 		while (true) {
 			const child = this._overviewList.get_row_at_index(0);
 			if (!child) {
@@ -64,13 +60,37 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 		}
 
 		if (this.resultProjects.length > 0) {
-			for (const project of this.resultProjects) {
+			const newProjects = [];
+			for (const oldProject of this.resultProjects) {
+				let project: FragileProject;
+
+				try {
+					const res = await fetch(
+						`http://localhost:3000/import?link=${oldProject.url}&platform=${oldProject.platform}`
+					);
+					if (res.status !== 200) {
+						throw new Error('Server responded with error');
+					}
+					project = res.json();
+				} catch (e) {
+					// Probably offline
+					console.error(e);
+					project = oldProject;
+				}
+
+				newProjects.push(project);
+
 				this._overviewList.append(new Gtk.Label({ label: project.projectName }));
 				const removeButton = new Gtk.Button({ label: 'remove' });
 				removeButton.connect('clicked', () => {
 					this._removeProject(project);
 				});
 				this._overviewList.append(removeButton);
+			}
+
+			if (this.resultProjects !== newProjects) {
+				this.resultProjects = newProjects;
+				this.saveProjects();
 			}
 		} else {
 			this._overviewList.append(new Gtk.Label({ label: 'No projects found' }));
@@ -99,6 +119,26 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 		} else {
 			console.error('projects.json does not exist');
 		}
+	}
+
+	saveProjects(): void {
+		const userDir = GLib.get_user_data_dir();
+		const projectFile = Gio.File.new_for_path(userDir + '/fragile/projects.json');
+		console.log(projectFile.get_path());
+
+		if (projectFile.query_exists(null)) {
+			projectFile.replace_contents_async(
+				new GLib.Bytes(JSON.stringify(this.resultProjects)),
+				null,
+				false,
+				Gio.FileCreateFlags.REPLACE_DESTINATION,
+				null,
+				(file, res) => {
+					file!.replace_contents_finish(res);
+				}
+			);
+		}
+		// No else, because there won't be any projects to save if the file doesn't exist anyway
 	}
 
 	//TODO: add onclick for each project label that leads to details window
@@ -150,26 +190,24 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 		let previousRowMatched = false;
 
 		this._overviewList.set_filter_func((row) => {
-
 			// if search entry is empty, show all rows
 			if (this._searchEntry.text === '') {
 				return true;
 			}
 
 			//@ts-ignore
-			let includesText = row.child.label.toLowerCase().includes(this._searchEntry.text.toLowerCase());
+			const includesText = row.child.label.toLowerCase().includes(this._searchEntry.text.toLowerCase());
 			//@ts-ignore
-			let isButton = row.child.label === 'remove';
+			const isButton = row.child.label === 'remove';
 
 			// if previous row was succesful on includesText, then this row should be a button
 			if (previousRowMatched) {
-
 				previousRowMatched = false;
 				//@ts-ignore
 				return row.child.label === 'remove';
 			}
 
-			let result = includesText && !isButton;
+			const result = includesText && !isButton;
 
 			previousRowMatched = result;
 
