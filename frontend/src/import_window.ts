@@ -6,6 +6,9 @@ import Gio from '@gi/gio2';
 import Gtk from '@gi/gtk4';
 import GLib from '@gi/glib2';
 import { FragDetailsWindow } from './details_window';
+import { FragileProject } from './models/fragileproject';
+import { FragileMission } from './models/fragilemission';
+import { FragileColumn } from './models/fragilecolumn';
 
 Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_finish');
 
@@ -90,7 +93,28 @@ export class FragImportWindow extends Adw.ApplicationWindow {
 
 	// TODO: open for real project, when we have the data
 	on_project_clicked(){
-		const win = new FragDetailsWindow({ application: this.application });
+		const mockMissions: FragileMission[] = [
+			{id: 1, missionName: "mission1", missionDescription: "description", missionType: "task"},
+			{id: 2, missionName: "mission2", missionDescription: "description", missionType: "task"},
+			{id: 3, missionName: "mission3", missionDescription: "description", missionType: "task"},
+			{id: 4, missionName: "mission4", missionDescription: "description", missionType: "task"},
+			{id: 5, missionName: "mission5", missionDescription: "description", missionType: "task"},
+		];
+
+		const mockColumns: FragileColumn[] = [
+			{name: "backlog", missions: mockMissions},
+			{name: "open", missions: mockMissions},
+			{name: "review", missions: mockMissions},
+			{name: "done", missions: mockMissions},
+		];
+
+		const mockProject: FragileProject = {
+			url: "mockurl.com",
+			projectName: "mock project",
+			platform: "jira",
+			columns: mockColumns
+		}
+		const win = new FragDetailsWindow(this.application, mockProject);
 		this.close();
 		win.show();
 	}
