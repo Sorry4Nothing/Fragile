@@ -8,6 +8,8 @@ import GLib from '@gi/glib2';
 import { FragileProject } from './models/fragileproject';
 import { FragileColumn } from './models/fragilecolumn';
 import { Box } from '../types/graphene1';
+import { FragDetailsWindow } from './details_window';
+import { FragImportWindow } from './import_window';
 
 Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_finish');
 
@@ -19,69 +21,43 @@ Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_f
 export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 	public error: string;
 	public errorVisible: boolean;
-	public projects: FragileProject[] = [
-		{
-			url: 'https://example.com',
-			projectName: 'Project 1',
-			platform: 'jira',
-			columns: [
-				{
-					name: 'backlog',
-					missions: [
-						{
-							id: 1,
-							missionName: 'Epic epic',
-							missionDescription: 'Description 1',
-							missionType: 'epic',
-						},
-					],
-				},
-			],
-		},
-		{
-			url: 'https://example.com',
-			projectName: 'Project 2',
-			platform: 'gitlab',
-			columns: [
-				{
-					name: 'stories backlog',
-					missions: [
-						{
-							id: 2,
-							missionName: 'Story story',
-							missionDescription: 'Description 2',
-							missionType: 'story',
-						},
-					],
-				},
-			],
-		},
-	];
+
 	private _overviewList: Gtk.ListBox;
+	private resultProjects: FragileProject[] = [];
 
 	constructor(props: Partial<Adw.ApplicationWindow.ConstructorProperties> = {}) {
 		super(props);
-		//this.refresh();
+		this.setProjectsFromJson();
+		setTimeout(() => {
+			this.refresh();
+		}, 1000);
 	}
 
 	on_new_clicked() {
-		console.log('navigate to new project window');
+		console.log(`navigate to import window`);
+		const win = new FragImportWindow({ application: this.application });
+		this.close();
+		win.show();
 	}
 
 	on_refresh_clicked() {
 		console.log('refreshing');
-		this.refresh();
+		this.setProjectsFromJson();
+		setTimeout(() => {
+			this.refresh();
+		}, 1000);
 	}
 
-	on_choose_project(id: number) {
-		console.log(`navigate to ${id} project details`);
+	on_choose_project(project: FragileProject) {
+		console.log(`navigate to ${project.projectName} project details`);
+		const win = new FragDetailsWindow({ application: this.application }, project);
+		this.close();
+		win.show();
 	}
 
 	refresh() {
+		console.log(this.resultProjects);
 		//should make a fetch call on real implementation
-		this.projects = this.projects;
-
-		// remove all children of overvielist ListBox
 		while (true) {
 			const child = this._overviewList.get_row_at_index(0);
 			if (!child) {
@@ -90,8 +66,40 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 			this._overviewList.remove(child);
 		}
 
-		for (const project of this.projects!) {
-			this._overviewList.append(new Gtk.Label({ label: project.projectName }));
+		if (this.resultProjects.length > 0) {
+			for (const project of this.resultProjects) {
+				this._overviewList.append(new Gtk.Label({ label: project.projectName }));
+			}
+		} else {
+			this._overviewList.append(new Gtk.Label({ label: 'No projects found' }));
+		}
+
+		console.log(this.resultProjects);
+	}
+
+	setProjectsFromJson(): void {
+		//read projects.json
+		const userDir = GLib.get_user_data_dir();
+		const projectFile = Gio.File.new_for_path(userDir + '/fragile/projects.json');
+
+		// check if file exists
+		if (projectFile.query_exists(null)) {
+			// read file
+			projectFile.load_contents_async(null, (file, res) => {
+				const [success, contents] = file!.load_contents_finish(res);
+				if (success) {
+					// parse json using textdecoder
+					const decoder = new TextDecoder();
+					const projects: FragileProject[] = JSON.parse(decoder.decode(contents));
+					this.resultProjects = projects;
+				} else {
+					console.error('could not read projects.json');
+				}
+			});
+		} else {
+			console.error('projects.json does not exist');
 		}
 	}
+
+	//TODO: add onclick for each project label that leads to details window
 }

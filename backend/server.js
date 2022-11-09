@@ -68,6 +68,8 @@ app.post('/register', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
 
+	console.log(password);
+
 	db.serialize(() => {
 		const insertStmt = db.prepare("INSERT INTO Fraccounts('name', 'password') VALUES (?, ?)", [username, password]);
 		insertStmt.run(async (err) => {
@@ -128,7 +130,14 @@ app.listen(port, () => {
 
 async function isLoggedIn(req, res) {
 	// Authorization: Bearer {token}
-	const token = req.headers.authorization.split(' ')[1];
+	let token;
+	try {
+		token = req.headers.authorization.split(' ')[1];
+	} catch (error) {
+		console.log(error);
+		return false;
+	}
+
 
 	if (!token) {
 		res.status(400).send('No token provided');
