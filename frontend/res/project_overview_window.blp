@@ -31,6 +31,17 @@ template ProjectOverviewWindow : Adw.ApplicationWindow {
             }
 		}
 
+		// add search 
+		Gtk.SearchBar {
+			search-mode-enabled: true;
+			visible: true;
+			// search entry
+			Gtk.SearchEntry searchEntry {
+				visible: true;
+				changed => on_search_changed();
+			}
+		}
+
 		Gtk.Box {
 			orientation: vertical;
 			margin-top: 20;

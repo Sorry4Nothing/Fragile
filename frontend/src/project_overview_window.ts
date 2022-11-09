@@ -16,13 +16,14 @@ Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_f
 @registerClass({
 	GTypeName: 'ProjectOverviewWindow',
 	Template: 'resource:///com/github/sorry4nothing/Fragile/project_overview_window.ui',
-	InternalChildren: ['overviewList'],
+	InternalChildren: ['overviewList', "searchEntry"],
 })
 export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 	public error: string;
 	public errorVisible: boolean;
 
 	private _overviewList: Gtk.ListBox;
+	private _searchEntry : Gtk.SearchEntry;
 	private resultProjects: FragileProject[] = [];
 
 	constructor(props: Partial<Adw.ApplicationWindow.ConstructorProperties> = {}) {
@@ -53,7 +54,6 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 	}
 
 	refresh() {
-		console.log(this.resultProjects);
 		//should make a fetch call on real implementation
 		while (true) {
 			const child = this._overviewList.get_row_at_index(0);
@@ -75,8 +75,6 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 		} else {
 			this._overviewList.append(new Gtk.Label({ label: 'No projects found' }));
 		}
-
-		console.log(this.resultProjects);
 	}
 
 	setProjectsFromJson(): void {
@@ -145,5 +143,37 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 		} else {
 			console.error('projects.json does not exist');
 		}
+	}
+
+	public on_search_changed() {
+		// save previous row
+		let previousRowMatched = false;
+
+		this._overviewList.set_filter_func((row) => {
+
+			// if search entry is empty, show all rows
+			if (this._searchEntry.text === '') {
+				return true;
+			}
+
+			//@ts-ignore
+			let includesText = row.child.label.toLowerCase().includes(this._searchEntry.text.toLowerCase());
+			//@ts-ignore
+			let isButton = row.child.label === 'remove';
+
+			// if previous row was succesful on includesText, then this row should be a button
+			if (previousRowMatched) {
+
+				previousRowMatched = false;
+				//@ts-ignore
+				return row.child.label === 'remove';
+			}
+
+			let result = includesText && !isButton;
+
+			previousRowMatched = result;
+
+			return result;
+		});
 	}
 }
