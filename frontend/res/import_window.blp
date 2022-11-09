@@ -2,7 +2,7 @@ using Gtk 4.0;
 using Adw 1;
 
 template FragImportWindow : Adw.ApplicationWindow {
-	width-request: 1000;
+	width-request: 600;
 	height-request: 600;
 
 	Gtk.Box {
@@ -16,27 +16,13 @@ template FragImportWindow : Adw.ApplicationWindow {
 
 		Gtk.Box{
 			orientation: horizontal;
-		
-			Gtk.ListBox sidebar {
-				width-request: 100;
-				height-request: 300;
-				halign: center;
-				valign: start;
-				margin-top: 20;
-				styles ['flat', 'pill']
-
-			 	Gtk.Button{
-					label: "Import";
-				}
-				Gtk.Label{
-				}
-			}
-
+			halign: center;
+			valign: center;
 			Gtk.Box {
 				orientation: vertical;
 				margin-top: 20;
 				margin-bottom: 20;
-				margin-start: 100;
+				margin-start: 20;
 				margin-end: 20;
 				spacing: 10;
 

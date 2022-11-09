@@ -5,6 +5,7 @@ import GObject from '@gi/gobject2';
 import Gio from '@gi/gio2';
 import GLib from '@gi/glib2';
 import { FragImportWindow } from './import_window';
+import { ProjectOverviewWindow } from './project_overview_window';
 
 Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_finish');
 
@@ -37,8 +38,8 @@ export class FragLoginWindow extends Adw.ApplicationWindow {
 				'content-type': 'application/json',
 			},
 			body: JSON.stringify({
-				username: 'bestUser',
-				password: 'securePassword',
+				username: this.username,
+				password: this.password,
 			}),
 		})
 			.then((res) => {
@@ -80,7 +81,7 @@ export class FragLoginWindow extends Adw.ApplicationWindow {
 				const jwt = res.text();
 				this._saveJwt(jwt);
 
-				const win = new FragImportWindow({ application: this.application });
+				const win = new ProjectOverviewWindow({ application: this.application });
 				this.close();
 				win.show();
 			})

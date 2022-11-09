@@ -6,6 +6,8 @@ import Gio from '@gi/gio2';
 import Gtk from '@gi/gtk4';
 import GLib from '@gi/glib2';
 import { FragDetailsWindow } from './details_window';
+import { FragileProject } from './models/fragileproject';
+import { ProjectOverviewWindow } from './project_overview_window';
 
 Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_finish');
 
@@ -39,7 +41,7 @@ Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_f
 			GObject.ParamFlags.READWRITE
 		),
 	},
-	Children: ['sidebar']
+	Children: [],
 })
 export class FragImportWindow extends Adw.ApplicationWindow {
 	public fragileName: string;
@@ -47,23 +49,10 @@ export class FragImportWindow extends Adw.ApplicationWindow {
 	public platform: number;
 	public error: string;
 	public errorVisible: boolean;
-	public sidebar: Gtk.ListBox;
-
-	public projects_mock = ["Project1", "Project2", "Project3"];
+	private apiImportLink: string = `http://localhost:3000/import`;
 
 	constructor(params = {}) {
 		super(params);
-		
-		this.projects_mock.forEach(project => {
-			const gtkButton = new Gtk.Button();
-
-			gtkButton.label = project;
-			gtkButton.connect('clicked', () => this.on_project_clicked());
-
-			this.sidebar.append(gtkButton);
-			this.sidebar.show();
-		})
-
 	}
 
 	on_import_clicked() {
@@ -76,21 +65,103 @@ export class FragImportWindow extends Adw.ApplicationWindow {
 			this.errorVisible = true;
 			return;
 		}
-		console.log('sending fragile import request');
-		fetch(this.link)
+		const platformName = this._platformNumberToString(this.platform);
+		const fullLink = this.apiImportLink + `?link=${this.link}&platform=${platformName}`;
+
+		console.log('sending fragile import request: ', fullLink);
+		fetch(fullLink)
 			.then((res) => {
-				console.log(res.status, res.statusText);
-				const data = res.text();
-				console.log(data);
+				if (res.status === 200) {
+					console.log('import request successful');
+					this._saveProject(res.json());
+					this._open_overview_window();
+				} else {
+					console.log('import request failed', res);
+					this.error = 'Import failed';
+					this.errorVisible = true;
+				}
 			})
 			.catch((err) => {
 				console.error(err);
+				this.error = 'Currently offline';
+				this.errorVisible = true;
 			});
 	}
 
-	// TODO: open for real project, when we have the data
-	on_project_clicked(){
-		const win = new FragDetailsWindow({ application: this.application });
+	private _platformNumberToString(platform: number) {
+		switch (platform) {
+			case 0:
+				return 'githöb';
+			case 1:
+				return 'jira';
+			case 2:
+				return 'fragile';
+			default:
+				return 'githöb';
+		}
+	}
+
+	private _saveProject(importResponseProject: any) {
+		console.log(importResponseProject);
+		importResponseProject.projectName = this.fragileName;
+		// create or append to projects.json inside user dir
+		const userDir = GLib.get_user_data_dir();
+		const projectDir = Gio.File.new_for_path(userDir + '/fragile');
+		const projectFile = Gio.File.new_for_path(userDir + '/fragile/projects.json');
+		// check if file exists
+		console.log(projectFile.query_exists(null));
+		if (projectFile.query_exists(null)) {
+			// read file
+			projectFile.load_contents_async(null, (file, res) => {
+				const [success, contents] = file!.load_contents_finish(res);
+				if (success) {
+					// parse json with textdecoder on contents
+					const decoder = new TextDecoder();
+					const projects = JSON.parse(decoder.decode(contents));
+					// append importResponseProjects which already is json
+					projects.push(importResponseProject);
+					// write file
+					projectFile.replace_contents_async(
+						new GLib.Bytes(JSON.stringify(projects)),
+						null,
+						false,
+						Gio.FileCreateFlags.REPLACE_DESTINATION,
+						null,
+						(file, res) => {
+							file!.replace_contents_finish(res);
+						}
+					);
+				} else {
+					console.error('could not read projects.json');
+				}
+			});
+		} else {
+			// create parent directories
+			if (!projectDir.query_exists(null)) {
+				projectDir.make_directory_with_parents(null);
+			}
+			// create file and parent directories inside user dir
+			projectFile.create_async(Gio.FileCreateFlags.NONE, GLib.PRIORITY_HIGH, null, (file, res) => {
+				file!.create_finish(res);
+
+				console.log(file);
+				// write file
+				projectFile.replace_contents_async(
+					new GLib.Bytes("[" + JSON.stringify(importResponseProject) + "]"),
+					null,
+					false,
+					Gio.FileCreateFlags.REPLACE_DESTINATION,
+					null,
+					(file, res) => {
+						file!.replace_contents_finish(res);
+					}
+				);
+			});
+		}
+	}
+
+	private _open_overview_window() {
+		const win = new ProjectOverviewWindow({ application: this.application });
 		this.close();
 		win.show();
 	}
