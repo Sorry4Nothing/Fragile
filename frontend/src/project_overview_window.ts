@@ -72,6 +72,7 @@ export class ProjectOverviewWindow extends Adw.ApplicationWindow {
 						throw new Error('Server responded with error');
 					}
 					project = res.json();
+					project.projectName = oldProject.projectName;
 				} catch (e) {
 					// Probably offline
 					console.error(e);
